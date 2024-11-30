@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro/Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 id="formTitle">Registro de Usuário</h1>
+        <form id="userForm">
+            <input type="text" id="username" placeholder="Nome" required>
+            <input type="email" id="email" placeholder="E-mail (somente @gmail.com)" required>
+            <button type="submit" id="submitButton">Registrar</button>
+        </form>
+        <p id="errorMessage" class="error-message"></p>
+        <p id="toggleLink" class="toggle-link">Já tem uma conta? Faça login.</p>
+    </div>
+
+    <script>
+        const form = document.getElementById('userForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const toggleLink = document.getElementById('toggleLink');
+        const formTitle = document.getElementById('formTitle');
+        const submitButton = document.getElementById('submitButton');
+
+        // Verifica se o usuário já está registrado
+        if (localStorage.getItem('userRegistered')) {
+            // Muda para a tela de login
+            toggleToLogin();
+        }
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+
+            // Validação do e-mail
+            if (!email.endsWith('@gmail.com')) {
+                errorMessage.textContent = "E-mail inválido! Use um e-mail do Gmail.";
+                return;
+            }
+
+            // Se já está registrado, realiza o login
+            if (localStorage.getItem('userRegistered')) {
+                const storedUsername = localStorage.getItem('username');
+                const storedEmail = localStorage.getItem('email');
+
+                // Verifica se o login é válido
+                if (username === storedUsername && email === storedEmail) {
+                    window.location.href = 'user.html'; // Redireciona para a página de chat
+                } else {
+                    errorMessage.textContent = "Nome de usuário ou e-mail incorretos.";
+                }
+            } else {
+                // Se não está registrado, registra o usuário
+                localStorage.setItem('userRegistered', true);
+                localStorage.setItem('username', username);
+                localStorage.setItem('email', email);
+                window.location.href = 'user.html'; // Redireciona para a página de chat
+            }
+        });
+
+        toggleLink.addEventListener('click', function() {
+            if (localStorage.getItem('userRegistered')) {
+                // Se já está registrado, muda para a tela de login
+                toggleToLogin();
+            } else {
+                // Se não está registrado, muda para a tela de registro
+                toggleToRegister();
+            }
+        });
+
+        function toggleToLogin() {
+            formTitle.textContent = "Login de Usuário";
+            document.getElementById('username').placeholder = "Nome";
+            document.getElementById('email').placeholder = "E-mail";
+            submitButton.textContent = "Entrar";
+            toggleLink.textContent = "Não tem uma conta? Registre-se.";
+            errorMessage.textContent = "";
+
+            // Limpa os campos de entrada
+            document.getElementById('username').value = '';
+            document.getElementById('email').value = '';
+        }
+
+        function toggleToRegister() {
+            formTitle.textContent = "Registro de Usuário";
+            document.getElementById('username').placeholder = "Nome";
+            document.getElementById('email').placeholder = "E-mail (somente @gmail.com)";
+            submitButton.textContent = "Registrar";
+            toggleLink.textContent = "Já tem uma conta? Faça login.";
+            errorMessage.textContent = "";
+
+            // Limpa os campos de entrada
+            document.getElementById('username').value = '';
+            document.getElementById('email').value = '';
+        }
+    </script>
+</body>
+</html>
